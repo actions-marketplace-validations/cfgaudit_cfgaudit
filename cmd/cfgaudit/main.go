@@ -25,6 +25,14 @@ import (
 var cfgauditVersion = "dev"
 
 func main() {
+	// Subcommands are dispatched before flag parsing so their args (e.g. a rule
+	// ID) aren't mistaken for the scan directory.
+	if len(os.Args) >= 2 && os.Args[1] == "explain" {
+		out, code := explainOutput(os.Args[2:])
+		fmt.Print(out)
+		os.Exit(code)
+	}
+
 	format := flag.String("format", "text", "output format: text, json, sarif")
 	user := flag.Bool("user", false, "also scan ~/.claude/settings.json")
 	claudeVersion := flag.String("claude-version", "", "override the Claude Code version used for rule gating (default: detect via `claude --version`)")
